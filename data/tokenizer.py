@@ -1,4 +1,10 @@
 import re
+# Re stands for regular expression. 
+# # Regular expressions are patterns that describe text we want to find.
+# \w+ finds one or more word characters, such as letters or numbers.
+# [^\w\s] finds one character that is not a word character or whitespace.
+# The | means "or", so we find either a word or a punctuation character.
+
 
 # The purpose of a tokenizer:
 # Break text into smaller pieces called tokens so that the AI
@@ -19,6 +25,7 @@ import re
 # Notice how there are at least two empty lines above the class
 # header (class Tokenizer).
 class Tokenizer:
+    
     # The purpose of the __init__() method is to initialise the
     # state of an object.
 
@@ -54,8 +61,27 @@ class Tokenizer:
         # What token does this number represent?
         self.id_to_token = {}
 
+    def tokenize(self, text):
+        # Use a regular expression to split the text into tokens.
+        # Regular expressions are patterns that describe text we want to find.
+        # \w+ finds one or more word characters, such as letters or numbers.
+        # [^\w\s] finds one character that is not a word character or whitespace.
+        # The | means "or", so we find either a word or a punctuation character.
+        tokens = re.findall(r"\w+|[^\w\s]", text)
+        for token in tokens:
+            if token not in self.token_to_id:
+                # Assign a unique ID to the token.
+                token_id = len(self.token_to_id)
+                self.token_to_id[token] = token_id
+                self.id_to_token[token_id] = token
+        return tokens
+
 raw_text = [
     "Hello, world!",
     "Hello Python.",
     "Python is great!"
 ]
+
+tokenizer = Tokenizer()
+tokens = tokenizer.tokenize(raw_text[0])
+print(tokens)
