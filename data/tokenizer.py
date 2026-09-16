@@ -1,4 +1,7 @@
 import re
+import tiktoken
+from wordsegment import load, segment
+
 # Re stands for regular expression. 
 # # Regular expressions are patterns that describe text we want to find.
 # \w+ finds one or more word characters, such as letters or numbers.
@@ -61,27 +64,45 @@ class Tokenizer:
         # What token does this number represent?
         self.id_to_token = {}
 
+        # Load the dictionary data for word segmentation.
+        # This is done once during initialization for efficiency.
+        load()
+
     def tokenize(self, text):
-        # Use a regular expression to split the text into tokens.
-        # Regular expressions are patterns that describe text we want to find.
-        # \w+ finds one or more word characters, such as letters or numbers.
-        # [^\w\s] finds one character that is not a word character or whitespace.
-        # The | means "or", so we find either a word or a punctuation character.
-        tokens = re.findall(r"\w+|[^\w\s]", text)
-        for token in tokens:
+        # Use a regular expression to split the text into initial tokens.
+        initial_tokens = re.findall(r"\w+|[^\w\s]", text)
+        
+        final_tokens = []
+        for token in initial_tokens:
+            # We only want to segment potential words, not punctuation.
+            # The \w+ pattern matches word characters (letters, numbers, underscore).
+            if re.fullmatch(r'\w+', token):
+                # The segment function splits concatenated words.
+                # e.g., "hellopython" -> ["hello", "python"]
+                # It also handles regular words, e.g., "hello" -> ["hello"]
+                # The library automatically handles casing.
+                segmented = segment(token)
+                final_tokens.extend(segmented)
+            else:
+                # This is for punctuation and other non-word characters.
+                final_tokens.append(token)
+
+        for token in final_tokens:
             if token not in self.token_to_id:
                 # Assign a unique ID to the token.
                 token_id = len(self.token_to_id)
                 self.token_to_id[token] = token_id
                 self.id_to_token[token_id] = token
-        return tokens
+
+        return final_tokens
+
+input_ = str(input("Enter a string to tokenize: "))
 
 raw_text = [
-    "Hello, world!",
-    "Hello Python.",
-    "Python is great!"
+    input_ # Added for demonstration
 ]
 
 tokenizer = Tokenizer()
-tokens = tokenizer.tokenize(raw_text[0])
-print(tokens)
+tokens = tokenizer.tokenize(raw_text[0]) # Test the new functionality
+print(f"Original text: '{raw_text[0]}'")
+print(f"Tokens: {tokens}")
