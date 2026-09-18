@@ -106,3 +106,4 @@ tokenizer = Tokenizer()
 tokens = tokenizer.tokenize(raw_text[0]) # Test the new functionality
 print(f"Original text: '{raw_text[0]}'")
 print(f"Tokens: {tokens}")
+print(f"Number of tokens: {len(tokens)}") 
