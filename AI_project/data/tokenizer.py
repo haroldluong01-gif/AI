@@ -44,7 +44,7 @@ class Tokenizer:
         #     "sat": 5,
         #     ".": 0
         # }
-        
+
         # token_to_id answers:
         # What number represents this token?
 
